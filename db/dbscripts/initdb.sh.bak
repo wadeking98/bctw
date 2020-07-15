@@ -1,0 +1,17 @@
+
+#!/bin/bash
+set -e
+cd $(dirname $0)
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+    CREATE SCHEMA bctw;
+    CREATE ROLE bctw;
+    CREATE EXTENSION postgis;
+    CREATE EXTENSION postgis_topology
+EOSQL
+forder=$(cat order.json | jq '.[]' | sed -e 's/^"//' -e 's/"$//')
+echo $(ls)
+for f in $forder
+do
+	psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -a -f "sqlscripts/$f"
+	echo "inserted $f"
+done

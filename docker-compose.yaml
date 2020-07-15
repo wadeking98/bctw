@@ -1,0 +1,29 @@
+version: "3"
+services:
+        django:
+            build: ./django
+            networks:
+                - overlay
+            ports:
+                - "8000:8000"
+            volumes:
+                - ./django:/code
+            depends_on:
+                - db
+        
+        db:
+            build: ./db
+            networks:
+                    - overlay
+            volumes:
+                    - pgdata:/var/lib/postgresql/data
+            environment:
+                    POSTGRES_PASSWORD: postgres
+            ports:
+                    - "5432:5432"
+
+
+volumes:
+        pgdata:
+networks:
+        overlay:
