@@ -70,6 +70,24 @@ data = {
                 "Aerial snow tracking"
             ]
         }
+    ],
+    "questions":[
+        {
+            "question":"is this a test?",
+            "mid":[1,3],
+            "mtid":[1],
+            "data_form":1
+        }
+    ],
+    "question_data":[
+        {
+            "qid":1,
+            "pid":1,
+            "uid":2,
+            "data_text":"this is a test",
+            "data_form":1
+            
+        }
     ]
 }
 
@@ -96,5 +114,25 @@ for method in data["methods"]:
         m_name.type_name=m_type
         m_name.method_name=method_name
         m_name.save()
+
+for question in data["questions"]:
+    q=survey_questions()
+    q.question=question["question"]
+    q.data_form=question["data_form"]
+    q.save()
+    for mid in question["mid"]:
+        q.method.add(survey_methods.objects.get(id=mid))
+    for mtid in question["mtid"]:
+        q.method_type.add(survey_method_types.objects.get(id=mtid))
+
+for q_data in data["question_data"]:
+    qd=survey_data()
+    qd.user=app_user.objects.get(id=q_data["uid"])
+    qd.project=project.objects.get(id=q_data["pid"])
+    qd.question=survey_questions.objects.get(id=q_data["qid"])
+    qd.data_text=q_data["data_text"]
+    qd.data_form=q_data["data_form"]
+    qd.public = True
+    qd.save()
     
     

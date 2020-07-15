@@ -55,11 +55,17 @@ class survey_methods(models.Model):
         verbose_name_plural="survey methods"
         unique_together = ('type_name','method_name')
 
+class data_type(models.IntegerChoices):
+    TEXT = 1, "Text"
+    BOOL = 2, "Boolean"
+    INT = 3, "Integer"
 
 class survey_questions(models.Model):
     question = models.CharField(max_length=500)
-    species = models.ForeignKey(species, on_delete=models.SET_NULL, blank=True, null=True)
-
+    species = models.ManyToManyField(species)
+    method = models.ManyToManyField(survey_methods)
+    method_type = models.ManyToManyField(survey_method_types)
+    data_form = models.IntegerField(choices=data_type.choices)
     class Meta:
         verbose_name_plural='survey questions'
 
@@ -67,11 +73,42 @@ class survey_data(models.Model):
     user = models.ForeignKey(app_user, on_delete=models.CASCADE)
     project = models.ForeignKey(project, on_delete=models.CASCADE)
     question = models.ForeignKey(survey_questions, on_delete=models.CASCADE)
-    data = models.CharField(max_length=500)
+    
+    data_text = models.CharField(max_length=500, blank=True, null=True)
+    data_bool = models.BooleanField(blank=True, null=True)
+    data_int = models.IntegerField(blank=True, null=True)
+
+    data_form = models.IntegerField(choices=data_type.choices)
+
     public = models.BooleanField()
 
     class Meta:
         verbose_name_plural='survey data'
+        constraints=[
+            models.CheckConstraint(
+                name="data_type_constraint",
+                check=(
+                    models.Q(
+                        data_form=data_type.BOOL,
+                        data_bool__isnull=False,
+                        data_text__isnull=True,
+                        data_int__isnull=True,
+                    )
+                    | models.Q(
+                        data_form=data_type.TEXT,
+                        data_bool__isnull=True,
+                        data_text__isnull=False,
+                        data_int__isnull=True,
+                    )
+                    | models.Q(
+                        data_form=data_type.INT,
+                        data_bool__isnull=True,
+                        data_text__isnull=True,
+                        data_int__isnull=False,
+                    )
+                )
+            )
+        ]
 
 class survey_template(models.Model):
     questions = models.ManyToManyField(survey_questions)
@@ -86,7 +123,7 @@ class observation_type(models.Model):
     class Meta:
         verbose_name_plural='observation types'
 
-class incedent_observations(gismodels.Model):
+class incident_observations(gismodels.Model):
     user = models.ForeignKey(app_user,on_delete=models.CASCADE)
     observation_type = models.ForeignKey(observation_type, on_delete=models.CASCADE)
     location = gismodels.PointField()
