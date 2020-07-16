@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.gis.db import models as gismodels
+from django.db.models import Lookup
+from django.db.models.fields import Field
 
 # Create your models here.
 class app_user(models.Model):
@@ -59,6 +61,7 @@ class data_type(models.IntegerChoices):
     TEXT = 1, "Text"
     BOOL = 2, "Boolean"
     INT = 3, "Integer"
+    FILE = 4, "File"
 
 class survey_questions(models.Model):
     question = models.CharField(max_length=500)
@@ -69,6 +72,29 @@ class survey_questions(models.Model):
     class Meta:
         verbose_name_plural='survey questions'
 
+
+class FileNotEqual(Lookup):
+    lookup_name = 'ne'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return '%s <> %s' % (lhs, rhs), params
+
+class FileEqual(Lookup):
+    lookup_name = 'eql'
+
+    def as_sql(self, compiler, connection):
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
+        params = lhs_params + rhs_params
+        return '%s = %s' % (lhs, rhs), params
+
+Field.register_lookup(FileEqual)
+Field.register_lookup(FileNotEqual)
+
+
 class survey_data(models.Model):
     user = models.ForeignKey(app_user, on_delete=models.CASCADE)
     project = models.ForeignKey(project, on_delete=models.CASCADE)
@@ -77,10 +103,15 @@ class survey_data(models.Model):
     data_text = models.CharField(max_length=500, blank=True, null=True)
     data_bool = models.BooleanField(blank=True, null=True)
     data_int = models.IntegerField(blank=True, null=True)
+    data_file = models.FileField(blank=True, null=True, upload_to='uploads/')
 
     data_form = models.IntegerField(choices=data_type.choices)
 
     public = models.BooleanField()
+    
+    def __str__(self):
+        return f"{self.user}, {self.project}, {self.question}"
+    
 
     class Meta:
         verbose_name_plural='survey data'
@@ -93,18 +124,28 @@ class survey_data(models.Model):
                         data_bool__isnull=False,
                         data_text__isnull=True,
                         data_int__isnull=True,
+                        data_file__eql="",
                     )
                     | models.Q(
                         data_form=data_type.TEXT,
                         data_bool__isnull=True,
                         data_text__isnull=False,
                         data_int__isnull=True,
+                        data_file__eql="",
                     )
                     | models.Q(
                         data_form=data_type.INT,
                         data_bool__isnull=True,
                         data_text__isnull=True,
                         data_int__isnull=False,
+                        data_file__eql="",
+                    )
+                    | models.Q(
+                        data_form=data_type.FILE,
+                        data_bool__isnull=True,
+                        data_text__isnull=True,
+                        data_int__isnull=True,
+                        data_file__ne="",
                     )
                 )
             )

@@ -9,18 +9,29 @@ from rest_framework.response import Response
 def test(request):
     return HttpResponse(mainTest())
 
+objs = {
+    "users":app_user.objects,
+    "species":species.objects,
+    "survey_methods":survey_methods.objects,
+    "survey_method_types":survey_method_types.objects,
+    "incident_observations":incident_observations.objects,
+    "observation_types":observation_type.objects,
+    "projects":project.objects,
+    "questions":survey_questions.objects,
+    "question_data":survey_data.objects
+}
+
 def get_all(request, obj=""):
-    objs = {
-        "users":lambda : HttpResponse(serializers.serialize('json', app_user.objects.all()), content_type='application/json'),
-        "species":lambda : HttpResponse(serializers.serialize('json', species.objects.all()), content_type='application/json'),
-        "survey_methods":lambda : HttpResponse(serializers.serialize('json', survey_methods.objects.all()), content_type='application/json'),
-        "survey_method_types":lambda : HttpResponse(serializers.serialize('json', survey_method_types.objects.all()), content_type='application/json'),
-        "incident_observations":lambda : HttpResponse(serializers.serialize('json', incident_observations.objects.all()), content_type='application/json'),
-        "observation_types":lambda : HttpResponse(serializers.serialize('json', observation_type.objects.all()), content_type='application/json'),
-        "projects":lambda : HttpResponse(serializers.serialize('json', project.objects.all()), content_type='application/json'),
-        "questions":lambda : HttpResponse(serializers.serialize('json', survey_questions.objects.all()), content_type='application/json')
-    }
-    return objs[obj]()
+    return HttpResponse(serializers.serialize('json', objs[obj].all()), content_type='application/json')
+
+def search(request, obj=""):
+    req_dict = dict(request.GET)
+    req_dict_clean = {}
+    #remove the array wrapper from value
+    for key in req_dict:
+        req_dict_clean[key] = req_dict[key][0]
+
+    return HttpResponse(serializers.serialize('json', objs[obj].filter(**req_dict_clean)), content_type='application/json')
 
 #TODO add api post methods
 
