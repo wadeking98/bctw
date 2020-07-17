@@ -9,6 +9,7 @@ if [ "$1" = "django" ] || [ "$1" = "all" ]; then
 	docker rmi bctw_django
 fi
 if [ "$1" = "vue" ] || [ "$1" = "all" ]; then
+	docker volume rm bctw_pgdata
 	docker rm bctw_vue_1
 	docker rmi bctw_vue
 fi
