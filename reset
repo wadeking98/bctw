@@ -1,0 +1,19 @@
+docker-compose down
+if [ "$1" = "db" ] || [ "$1" = "all" ]; then
+	docker volume rm bctw_pgdata
+	docker rm bctw_db_1
+	docker rmi bctw_db
+fi
+if [ "$1" = "django" ] || [ "$1" = "all" ]; then
+	docker rm bctw_django_1
+	docker rmi bctw_django
+fi
+if [ "$1" = "vue" ] || [ "$1" = "all" ]; then
+	docker rm bctw_vue_1
+	docker rmi bctw_vue
+fi
+if [ "$1" = "hard" ]; then
+	docker rm $(docker -ps -a)
+	docker rmi $(docker images -q)
+	docker volume rm $(docker volume ls -q)
+fi
