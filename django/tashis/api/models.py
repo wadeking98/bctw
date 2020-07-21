@@ -2,19 +2,13 @@ from django.db import models
 from django.contrib.gis.db import models as gismodels
 from django.db.models import Lookup
 from django.db.models.fields import Field
+from django.contrib.auth.models import User
 
-# Create your models here.
-class app_user(models.Model):
-    fname = models.CharField(max_length=50)
-    lname = models.CharField(max_length=50)
-
-    def __str__(self):
-        return f"{self.lname}, {self.fname}"
 
 class project(models.Model):
     name = models.CharField(max_length=100)
-    users = models.ManyToManyField(app_user)
-    manager = models.ForeignKey(app_user, on_delete=models.SET_NULL, blank=True,null=True, related_name="manager")
+    users = models.ManyToManyField(User)
+    manager = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True,null=True, related_name="manager")
 
     def __str__(self):
         return self.name
@@ -96,7 +90,7 @@ Field.register_lookup(FileNotEqual)
 
 
 class survey_data(models.Model):
-    user = models.ForeignKey(app_user, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(project, on_delete=models.CASCADE)
     question = models.ForeignKey(survey_questions, on_delete=models.CASCADE)
     
@@ -165,7 +159,7 @@ class observation_type(models.Model):
         verbose_name_plural='observation types'
 
 class incident_observations(gismodels.Model):
-    user = models.ForeignKey(app_user,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     observation_type = models.ForeignKey(observation_type, on_delete=models.CASCADE)
     location = gismodels.PointField()
     species = models.ForeignKey(species, on_delete=models.CASCADE, blank=True, null=True)

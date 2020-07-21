@@ -3,7 +3,6 @@ from django.contrib.gis.admin import OSMGeoAdmin
 from .models import *
 
 # Register your models here.
-admin.site.register(app_user)
 admin.site.register(project)
 admin.site.register(species)
 admin.site.register(map_data)

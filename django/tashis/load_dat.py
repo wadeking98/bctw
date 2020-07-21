@@ -23,19 +23,27 @@ data = {
     "users":[
         {
             "fname":"alice", 
-            "lname":"test"
+            "lname":"test",
+            "email":"alice@mail.com",
+            "pass":"test"
         },
         {
             "fname":"bob",
-            "lname":"test"
+            "lname":"test",
+            "email":"bob@mail.com",
+            "pass":"test"
         },
         {
             "fname":"john",
-            "lname":"doe"
+            "lname":"doe",
+            "email":"john@mail.com",
+            "pass":"test"
         },
         {
             "fname":"jane",
-            "lname":"doe"
+            "lname":"doe",
+            "email":"jane@mail.com",
+            "pass":"test"
         }
     ],
     "projects":[
@@ -92,18 +100,21 @@ data = {
 }
 
 for user in data["users"]:
-    u=app_user()
-    u.fname=user["fname"]
-    u.lname=user["lname"]
+    u=User()
+    u.first_name=user["fname"]
+    u.last_name=user["lname"]
+    u.username=user["email"]
+    u.email=user["email"]
+    u.password=user["pass"]
     u.save()
 
 for proj in data["projects"]:
     p = project()
     p.name=proj["name"]
-    p.manager=app_user.objects.get(id=proj["manager"])
+    p.manager=User.objects.get(id=proj["manager"])
     p.save()
     for uid in proj["users"]:
-        p.users.add(app_user.objects.get(id=uid))
+        p.users.add(User.objects.get(id=uid))
 
 for method in data["methods"]:
     m_type = survey_method_types()
@@ -127,7 +138,7 @@ for question in data["questions"]:
 
 for q_data in data["question_data"]:
     qd=survey_data()
-    qd.user=app_user.objects.get(id=q_data["uid"])
+    qd.user=User.objects.get(id=q_data["uid"])
     qd.project=project.objects.get(id=q_data["pid"])
     qd.question=survey_questions.objects.get(id=q_data["qid"])
     qd.data_text=q_data["data_text"]

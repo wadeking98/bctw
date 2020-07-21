@@ -10,7 +10,7 @@ def test(request):
     return HttpResponse(mainTest())
 
 objs = {
-    "users":app_user.objects,
+    "users":User.objects,
     "species":species.objects,
     "survey_methods":survey_methods.objects,
     "survey_method_types":survey_method_types.objects,
@@ -32,6 +32,9 @@ def search(request, obj=""):
         req_dict_clean[key] = req_dict[key][0]
 
     return HttpResponse(serializers.serialize('json', objs[obj].filter(**req_dict_clean)), content_type='application/json')
+
+def signup(request):
+    return HttpResponse("hello")
 
 #TODO add api post methods
 
