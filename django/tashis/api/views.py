@@ -1,10 +1,13 @@
 from django.shortcuts import render
+import json
 from .models import *
 from .tests import *
 from django.http import HttpResponse, JsonResponse
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate
 from rest_framework import status
-from rest_framework.response import Response
 # Create your views here.
 def test(request):
     return HttpResponse(mainTest())
@@ -33,9 +36,49 @@ def search(request, obj=""):
 
     return HttpResponse(serializers.serialize('json', objs[obj].filter(**req_dict_clean)), content_type='application/json')
 
+@csrf_exempt
 def signup(request):
-    return HttpResponse("hello")
 
-#TODO add api post methods
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        keys = ['fname', 'lname', 'email', 'password']
+        for key in keys:
+            if data.get(key, None) is None:
+                return HttpResponse(status=405)
+        
+        try:
+            User.objects.create_user(username=data['email'],
+                email=data['email'],
+                first_name=data['fname'],
+                last_name=data['lname'],
+                password=data['password'])
+        except:
+            return HttpResponse(status=405)
+        return HttpResponse(status=200)
+    return HttpResponse(status=405)
+
+@csrf_exempt
+def signin(request):
+    resp=None
+    if request.method == 'POST':
+        data=json.loads(request.body.decode('utf-8'))
+        keys = ['email', 'password']
+        for key in keys:
+            if data.get(key, None) is None:
+                return HttpResponse(status=405)
+        
+        user = authenticate(username=data['email'], password=data['password'])
+        if user is not None:
+            
+            resp = HttpResponse(status=200)
+            resp.set_signed_cookie('auth', True)
+        else:
+            resp = HttpResponse(status=403)
+    else:
+        resp = HttpResponse(status=405)
+    
+    return resp
+        
+
 
 

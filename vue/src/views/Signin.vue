@@ -2,16 +2,7 @@
   <div class="signup">
     <vnav/>
     <form class="signup-form" v-on:submit.prevent="onSubmit">
-    <div class="form-group">
-        <label for="FirstName">First Name</label>
-        <input type="text" class="form-control" id="FirstName"  placeholder="First Name" v-model="fname">
-    </div>
-
-    <div class="form-group">
-        <label for="LastName">Last Name</label>
-        <input type="text" class="form-control" id="LastName"  placeholder="Last Name" v-model="lname">
-    </div>
-
+    
     <div class="form-group">
         <label for="InputEmail">Email address</label>
         <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Enter email" v-model="email">
@@ -19,12 +10,9 @@
     </div>
     <div class="form-group">
         <label for="InputPassword">Password</label>
-        <input type="password" class="form-control" id="InputPassword" v-model="password1">
+        <input type="password" class="form-control" id="InputPassword" v-model="password">
     </div>
-    <div class="form-group">
-        <label for="InputPassword">Confirm Password</label>
-        <input type="password" class="form-control" id="InputPassword" v-model="password2">
-    </div>
+    
     
     <button v-if="checkInput()" type="submit" class="btn btn-primary">Submit</button>
     <button v-else  class="btn btn-secondary">Submit</button>
@@ -39,30 +27,25 @@ import vnav from '@/components/vnav.vue'
 import axios from 'axios'
 
 export default {
-  name: 'Signup',
+  name: 'Signin',
   components: {
     vnav
   },
   data: function(){
     return{
-      fname:'',
-      lname:'',
-      password1:'',
-      password2:'',
+      password:'',
       email:''
     }
   },
   methods:{
     checkInput: function(){
       let emailRegex = new RegExp(/\w+@\w+\.\w+/)
-      return this.password1 == this.password2 && this.password1 != '' && emailRegex.test(this.email)
+      return emailRegex.test(this.email)
     },
     onSubmit(){
       alert("test")
-      axios.post("http://localhost:8000/api/signup/",{
-        fname:this.fname,
-        lname:this.lname,
-        password:this.password1,
+      axios.post("http://localhost:8000/api/signin/",{
+        password:this.password,
         email:this.email
         })
     }

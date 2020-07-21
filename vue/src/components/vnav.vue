@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
         <li class="nav-item active">
-            <a class="nav-link" href="#">Login <span class="sr-only">(current)</span></a>
+            <router-link class="nav-link" to="/signin">Login</router-link>
         </li>
         <li class="nav-item">
             <router-link class="nav-link" to="/signup">Signup</router-link>

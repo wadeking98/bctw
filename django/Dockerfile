@@ -9,10 +9,6 @@ RUN pip install -r requirements.txt
 
 RUN apt-get install -y binutils libproj-dev gdal-bin libgdal-dev python3-gdal
 
-RUN pip install psycopg2-binary
-
-RUN pip install django djangorestframework Pillow
-
 COPY . /code/
 WORKDIR /code
 
