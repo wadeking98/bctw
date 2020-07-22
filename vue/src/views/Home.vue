@@ -1,17 +1,18 @@
 <template>
   <div class="home">
-    <vnav/>
+    <h1>home</h1>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import vnav from '@/components/vnav.vue'
 
 export default {
   name: 'Home',
   components: {
-    vnav
   }
 }
 </script>
+<style>
+
+</style>

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Signup from '../views/Signup.vue'
 import Signin from '../views/Signin.vue'
+import Dashboard from '../views/Dashboard.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ Vue.use(VueRouter)
     path: '/signin',
     name: 'Signin',
     component: Signin
+  },
+  {
+    path: '/dash',
+    name: 'Dashboard',
+    component: Dashboard
   },
   {
     path: '/about',

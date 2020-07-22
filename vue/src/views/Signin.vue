@@ -1,6 +1,5 @@
 <template>
   <div class="signup">
-    <vnav/>
     <form class="signup-form" v-on:submit.prevent="onSubmit">
     
     <div class="form-group">
@@ -18,18 +17,19 @@
     <button v-else  class="btn btn-secondary">Submit</button>
     
     </form>
+    
+    <button v-on:click="checkAuth">test</button>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import vnav from '@/components/vnav.vue'
 import axios from 'axios'
+axios.defaults.withCredentials = true
 
 export default {
   name: 'Signin',
   components: {
-    vnav
   },
   data: function(){
     return{
@@ -41,6 +41,9 @@ export default {
     checkInput: function(){
       let emailRegex = new RegExp(/\w+@\w+\.\w+/)
       return emailRegex.test(this.email)
+    },
+    checkAuth(){
+      axios.get("http://localhost:8000/api/test/")
     },
     onSubmit(){
       alert("test")

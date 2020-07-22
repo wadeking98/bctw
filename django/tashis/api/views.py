@@ -6,11 +6,12 @@ from django.http import HttpResponse, JsonResponse
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 # Create your views here.
 def test(request):
-    return HttpResponse(mainTest())
+    print(request.session.items())
+    return HttpResponse(request.user.is_authenticated)
 
 objs = {
     "users":User.objects,
@@ -47,11 +48,12 @@ def signup(request):
                 return HttpResponse(status=405)
         
         try:
-            User.objects.create_user(username=data['email'],
+            user = User.objects.create_user(username=data['email'],
                 email=data['email'],
                 first_name=data['fname'],
                 last_name=data['lname'],
                 password=data['password'])
+            login(request, user)
         except:
             return HttpResponse(status=405)
         return HttpResponse(status=200)
@@ -69,15 +71,21 @@ def signin(request):
         
         user = authenticate(username=data['email'], password=data['password'])
         if user is not None:
-            
+            login(request, user)
             resp = HttpResponse(status=200)
             resp.set_signed_cookie('auth', True)
         else:
-            resp = HttpResponse(status=403)
+            resp = HttpResponse(status=401)
     else:
         resp = HttpResponse(status=405)
     
     return resp
+
+
+@csrf_exempt
+def logout_view(request):
+    logout(request)
+    return HttpResponse(status=200)
         
 
 

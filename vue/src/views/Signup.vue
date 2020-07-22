@@ -1,6 +1,5 @@
 <template>
   <div class="signup">
-    <vnav/>
     <form class="signup-form" v-on:submit.prevent="onSubmit">
     <div class="form-group">
         <label for="FirstName">First Name</label>
@@ -35,13 +34,11 @@
 
 <script>
 // @ is an alias to /src
-import vnav from '@/components/vnav.vue'
 import axios from 'axios'
 
 export default {
   name: 'Signup',
   components: {
-    vnav
   },
   data: function(){
     return{
