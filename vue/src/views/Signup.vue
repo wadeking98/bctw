@@ -14,15 +14,15 @@
     <div class="form-group">
         <label for="InputEmail">Email address</label>
         <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" placeholder="Enter email" v-model="email">
-        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <small v-if="emailErr" id="emailErr">that email already exists</small>
     </div>
     <div class="form-group">
         <label for="InputPassword">Password</label>
         <input type="password" class="form-control" id="InputPassword" v-model="password1">
     </div>
     <div class="form-group">
-        <label for="InputPassword">Confirm Password</label>
-        <input type="password" class="form-control" id="InputPassword" v-model="password2">
+        <label for="InputPasswordConf">Confirm Password</label>
+        <input type="password" class="form-control" id="InputPasswordConf" v-model="password2">
     </div>
     
     <button v-if="checkInput()" type="submit" class="btn btn-primary">Submit</button>
@@ -46,7 +46,8 @@ export default {
       lname:'',
       password1:'',
       password2:'',
-      email:''
+      email:'',
+      emailErr:false
     }
   },
   methods:{
@@ -54,13 +55,21 @@ export default {
       let emailRegex = new RegExp(/\w+@\w+\.\w+/)
       return this.password1 == this.password2 && this.password1 != '' && emailRegex.test(this.email)
     },
-    onSubmit(){
-      alert("test")
+    onSubmit(){      
       axios.post("http://localhost:8000/api/signup/",{
         fname:this.fname,
         lname:this.lname,
         password:this.password1,
         email:this.email
+        }).then((response)=>{
+          if(response.status==200){
+            this.$router.push('dash')
+          }
+        },(error)=>{
+          console.log(error.response)
+          if(error.response.status==409){
+            this.emailErr=true
+          }
         })
     }
   }
@@ -71,5 +80,8 @@ export default {
 .signup-form{
     width: 50%;
     margin: auto;
+}
+#emailErr{
+  color: darkred;
 }
 </style>

@@ -48,12 +48,19 @@ def signup(request):
                 return HttpResponse(status=405)
         
         try:
-            user = User.objects.create_user(username=data['email'],
-                email=data['email'],
-                first_name=data['fname'],
-                last_name=data['lname'],
-                password=data['password'])
-            login(request, user)
+            print("got here")
+            user = User.objects.filter(username=data['email']).first()
+            
+            if user is None:
+                
+                user = User.objects.create_user(username=data['email'],
+                    email=data['email'],
+                    first_name=data['fname'],
+                    last_name=data['lname'],
+                    password=data['password'])
+                login(request, user)
+            else:
+                return HttpResponse(status=409)
         except:
             return HttpResponse(status=405)
         return HttpResponse(status=200)

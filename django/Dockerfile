@@ -14,4 +14,4 @@ WORKDIR /code
 
 
 EXPOSE 8000
-CMD ["python3", "tashis/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/bin/bash", "-c", "init.sh"]

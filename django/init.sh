@@ -6,3 +6,5 @@ DJANGO_SUPERUSER_PASSWORD=admin python3 tashis/manage.py createsuperuser --no-in
 python3 tashis/manage.py makemigrations
 
 python3 tashis/manage.py migrate
+
+python3 tashis/manage.py runserver 0.0.0.0:8000

@@ -44,6 +44,7 @@ export default {
   methods:{
     logout(){
       axios.post("http://localhost:8000/api/logout/")
+      this.$router.push("/")
     }
   }
 }

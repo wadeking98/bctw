@@ -12,6 +12,7 @@
         <input type="password" class="form-control" id="InputPassword" v-model="password">
     </div>
     
+    <small id="loginErr" v-if="loginErr">Incorrect Username or Password</small>
     
     <button v-if="checkInput()" type="submit" class="btn btn-primary">Submit</button>
     <button v-else  class="btn btn-secondary">Submit</button>
@@ -34,7 +35,8 @@ export default {
   data: function(){
     return{
       password:'',
-      email:''
+      email:'',
+      loginErr:false
     }
   },
   methods:{
@@ -50,6 +52,15 @@ export default {
       axios.post("http://localhost:8000/api/signin/",{
         password:this.password,
         email:this.email
+        }).then((response)=>{
+          if(response.status==200){
+            this.$router.push('dash')
+          }
+        },(error)=>{
+          console.log(error.response)
+          if(error.response.status==401){
+            this.emailErr=true
+          }
         })
     }
   }
@@ -60,5 +71,7 @@ export default {
 .signup-form{
     width: 50%;
     margin: auto;
+}.loginErr{
+  color: darkred;
 }
 </style>
